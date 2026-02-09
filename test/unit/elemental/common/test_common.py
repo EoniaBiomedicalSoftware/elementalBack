@@ -4,30 +4,30 @@ from app.elemental.common.error_codes import ElementalErrorCode
 from app.elemental.common.schemas.elemental import ElementalSchema
 
 def test_elemental_error_code_structure():
-    """Debe tener código HTTP y mensaje."""
+    """Must have HTTP code and message."""
     error = ElementalErrorCode.INVALID_INPUT
     assert isinstance(error.http_code, int)
     assert isinstance(error.default_message, str)
     assert error.http_code == 400
 
 def test_elemental_error_code_to_dict():
-    """Debe convertir a diccionario nombre -> código."""
+    """Must convert to dictionary name -> code."""
     d = ElementalErrorCode.to_dict()
     assert d["INVALID_INPUT"] == 400
     assert "UNAUTHORIZED" in d
 
 def test_elemental_schema_config():
-    """Debe tener configuración base correcta."""
+    """Must have correct base configuration."""
     class TestSchema(ElementalSchema):
         id: int
         
-    # Verificar from_attributes (orm_mode en v1)
+    # Verify from_attributes (orm_mode in v1)
     assert TestSchema.model_config.get("from_attributes") is True
-    # Verificar ignorar extras
+    # Verify ignore extras
     assert TestSchema.model_config.get("extra") == "ignore"
 
 def test_elemental_schema_instantiation():
-    """Debe instanciar correctamente e ignorar extras."""
+    """Must instantiate correctly and ignore extras."""
     class TestSchema(ElementalSchema):
         name: str
         

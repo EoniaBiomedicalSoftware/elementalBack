@@ -21,35 +21,35 @@ def mock_cover_settings():
 @patch("app.elemental.cover.typer.echo")
 @patch("app.elemental.cover.typer.secho")
 def test_get_cover_web_debug(mock_secho, mock_echo, mock_cover_settings):
-    """Debe mostrar información completa en modo web con debug."""
+    """Must show complete information in web mode with debug."""
     mock_cover_settings.application.debug = True
     
     get_cover("web")
     
-    # Verificar llamadas básicas
+    # Verify basic calls
     assert mock_secho.call_count >= 5
     assert mock_echo.call_count >= 1
 
 @patch("app.elemental.cover.typer.echo")
 @patch("app.elemental.cover.typer.secho")
 def test_get_cover_cli(mock_secho, mock_echo, mock_cover_settings):
-    """Debe mostrar información limitada en modo cli."""
+    """Must show limited information in cli mode."""
     get_cover("cli")
     
-    # En modo CLI no imprime URL ni Docs
-    # Validamos que no intente acceder a atributos exclusivos de web si no son necesarios
-    # (aunque el código actual accede a settings.application que tiene todo)
+    # In CLI mode it does not print URL or Docs
+    # Validate that it does not attempt to access exclusive web attributes if they are not necessary
+    # (although current code accesses settings.application which has everything)
     assert mock_secho.called
     assert mock_echo.called
 
 @patch("app.elemental.cover.typer.echo")
 @patch("app.elemental.cover.typer.secho")
 def test_get_cover_ssl_enabled(mock_secho, mock_echo, mock_cover_settings):
-    """Debe mostrar https si SSL está habilitado."""
+    """Must show https if SSL is enabled."""
     mock_cover_settings.application.ssl_enabled = True
     
     get_cover("web")
     
-    # Podríamos inspeccionar los argumentos de llamada para verificar 'https'
-    # pero con verificar que corre sin error es un buen comienzo.
+    # We could inspect call arguments to verify 'https'
+    # but verifying that it runs without error is a good start.
     assert mock_secho.called

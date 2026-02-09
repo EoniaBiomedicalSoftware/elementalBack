@@ -13,7 +13,7 @@ from app.elemental.security.passwords.utils import (
 
 @patch("app.elemental.security.passwords.utils._pwd_context")
 def test_get_password_hash(mock_context):
-    """Debe llamar al contexto de hash."""
+    """Must call hash context."""
     mock_context.hash.return_value = "hashed_secret"
     result = get_password_hash("secret")
     
@@ -22,14 +22,14 @@ def test_get_password_hash(mock_context):
 
 @patch("app.elemental.security.passwords.utils._pwd_context")
 def test_verify_password(mock_context):
-    """Debe verificar correctamente la contraseña."""
+    """Must verify password correctly."""
     verify_password("plain", "hash")
     mock_context.verify.assert_called_with("plain", "hash")
 
 # --- Strength Tests ---
 
 def test_validate_password_strength_valid():
-    """Debe validar una contraseña fuerte."""
+    """Must validate a strong password."""
     # 8 chars, Upper, Lower, Number, default special allowed
     pwd = "Password1!"
     assert validate_password_strength(
@@ -42,12 +42,12 @@ def test_validate_password_strength_valid():
     )
 
 def test_validate_password_strength_too_short():
-    """Debe lanzar error si es muy corta."""
+    """Must raise error if too short."""
     with pytest.raises(InvalidLengthError):
         validate_password_strength("Short1!", min_length=10)
 
 def test_validate_password_strength_missing_requirements():
-    """Debe verificar cada requisito individualmente."""
+    """Must verify each requirement individually."""
     # Missing uppercase
     with pytest.raises(PasswordStrengthError) as exc:
         validate_password_strength("lowercase1!", require_uppercase=True)
@@ -71,13 +71,13 @@ def test_validate_password_strength_missing_requirements():
 # --- Generator Tests ---
 
 def test_generate_secure_password_length():
-    """Debe generar contraseña de la longitud correcta."""
+    """Must generate password of correct length."""
     pwd = generate_secure_password(length=16)
     assert len(pwd) == 16
 
 def test_generate_secure_password_complexity():
-    """Debe incluir todos los tipos de caracteres requeridos."""
-    # Probamos varias veces para evitar falsos positivos por aleatoriedad
+    """Must include all required character types."""
+    # Test multiple times to avoid false positives due to randomness
     for _ in range(5):
         pwd = generate_secure_password(
             length=20,
@@ -92,6 +92,6 @@ def test_generate_secure_password_complexity():
         assert any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in pwd)
 
 def test_generate_secure_password_custom_length():
-    """Debe respetar longitud personalizada."""
+    """Must respect custom length."""
     pwd = generate_secure_password(length=50)
     assert len(pwd) == 50

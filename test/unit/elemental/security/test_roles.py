@@ -10,46 +10,46 @@ from app.elemental.security.roles import (
 from app.elemental.exceptions import ForbiddenError, UnauthorizedError
 
 def test_validate_roles_valid():
-    """Debe permitir cadenas y enteros."""
+    """Must allow strings and integers."""
     validate_roles("admin", "user", 1, 2)
-    assert True  # Si no lanza excepción, pasa
+    assert True  # If it doesn't raise exception, it passes
 
 def test_validate_roles_invalid():
-    """Debe lanzar ValueError para tipos no permitidos."""
+    """Must raise ValueError for disallowed types."""
     with pytest.raises(ValueError):
         validate_roles("admin", None)
 
 def test_check_user_role_returns_true():
-    """Debe retornar True si el rol está en la lista."""
+    """Must return True if the role is in the list."""
     payload = {"role": "admin"}
     assert check_user_role(payload, ["admin", "user"])
 
 def test_check_user_role_returns_false():
-    """Debe retornar False si el rol no coincide."""
+    """Must return False if the role does not match."""
     payload = {"role": "guest"}
     assert not check_user_role(payload, ["admin", "superadmin"])
 
 def test_require_role_success():
-    """Debe retornar el payload si el rol es válido."""
+    """Must return the payload if the role is valid."""
     payload = {"role": "admin", "data": 123}
     result = require_role(payload, "admin")
     assert result == payload
 
 def test_require_role_no_token():
-    """Debe lanzar UnauthorizedError si no hay payload."""
+    """Must raise UnauthorizedError if there is no payload."""
     with pytest.raises(UnauthorizedError):
         require_role({}, "admin")
     with pytest.raises(UnauthorizedError):
         require_role(None, "admin")
 
 def test_require_role_forbidden():
-    """Debe lanzar ForbiddenError si el rol es incorrecto."""
+    """Must raise ForbiddenError if the role is incorrect."""
     payload = {"role": "user"}
     with pytest.raises(ForbiddenError):
         require_role(payload, "admin")
 
 def test_extract_user_info():
-    """Debe extraer correctamente los campos definidos."""
+    """Must correctly extract defined fields."""
     payload = {
         "id": 1,
         "username": "test",
@@ -65,7 +65,7 @@ def test_extract_user_info():
     assert "extra" not in info
 
 def test_get_user_permissions_and_has_permission():
-    """Debe verificar permisos correctamente."""
+    """Must verify permissions correctly."""
     payload = {"permissions": ["read", "write"]}
     
     assert get_user_permissions(payload) == ["read", "write"]

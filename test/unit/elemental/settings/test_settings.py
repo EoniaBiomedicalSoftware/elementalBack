@@ -7,8 +7,8 @@ from app.elemental.settings.state import init_settings, get_settings, _settings
 
 @pytest.fixture(autouse=True)
 def reset_settings_state():
-    """Resetear estado global antes de cada test."""
-    # Accedemos a la variable global mediante el módulo importado
+    """Reset global state before each test."""
+    # Access the global variable through the imported module
     import app.elemental.settings.state as state_module
     state_module._settings = None
     yield
@@ -17,7 +17,7 @@ def reset_settings_state():
 # --- ElementalSettings Tests ---
 
 def test_web_application_defaults():
-    """Debe tener defaults correctos para Web."""
+    """Must have correct defaults for Web."""
     web_app = WebApplication()
     assert web_app.app_type == "web"
     assert web_app.cors.allow_credentials is True
@@ -25,24 +25,24 @@ def test_web_application_defaults():
     assert web_app.ssl_enabled is False
 
 def test_cli_application_defaults():
-    """Debe tener defaults correctos para CLI."""
+    """Must have correct defaults for CLI."""
     cli_app = CliApplication()
     assert cli_app.app_type == "cli"
 
 def test_elemental_settings_discrimination(monkeypatch):
-    """Debe discriminar correctamente entre Web y CLI usando app_type."""
-    # FORZAR carga de init_settings seteando la variable de entorno que activa la lógica estándar
-    # Ver elemental.py:66
+    """Must correctly discriminate between Web and CLI using app_type."""
+    # FORCE init_settings load by setting the environment variable that activates standard logic
+    # See elemental.py:66
     monkeypatch.setenv("elementalback_application__app_env", "test")
 
-    # Caso Web
+    # Web case
     settings_web = ElementalSettings(
         application={"app_type": "web", "app_name": "WebTest"}
     )
     assert isinstance(settings_web.application, WebApplication)
     assert settings_web.application.app_type == "web"
 
-    # Caso CLI
+    # CLI case
     settings_cli = ElementalSettings(
         application={"app_type": "cli", "app_name": "CliTest"}
     )
@@ -50,11 +50,11 @@ def test_elemental_settings_discrimination(monkeypatch):
     assert settings_cli.application.app_type == "cli"
 
 def test_elemental_settings_env_override(monkeypatch):
-    """Debe permitir override por variables de entorno."""
-    # El método settings_customise_sources busca explícitamente esta variable en minúsculas en la línea 66 de elemental.py
+    """Must allow override by environment variables."""
+    # The settings_customise_sources method explicitly looks for this variable in lowercase on line 66 of elemental.py
     monkeypatch.setenv("elementalback_application__app_env", "custom_env")
     
-    # Pydantic v2 lee variables de entorno estándar (usualmente mayúsculas) para los campos
+    # Pydantic v2 reads standard environment variables (usually uppercase) for fields
     monkeypatch.setenv("elementalback_application__app_name", "EnvApp")
     monkeypatch.setenv("elementalback_application__app_type", "web")
     
@@ -64,7 +64,7 @@ def test_elemental_settings_env_override(monkeypatch):
 # --- State Tests ---
 
 def test_init_and_get_settings():
-    """Debe inicializar y recuperar settings globalmente."""
+    """Must initialize and retrieve settings globally."""
     s = ElementalSettings(application={"app_type": "web"})
     init_settings(s)
     
@@ -72,6 +72,6 @@ def test_init_and_get_settings():
     assert retrieved is s
 
 def test_get_settings_uninitialized():
-    """Debe lanzar RuntimeError si no se inicializó."""
+    """Must raise RuntimeError if not initialized."""
     with pytest.raises(RuntimeError):
         get_settings()
