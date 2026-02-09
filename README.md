@@ -74,7 +74,7 @@ Starts the FastAPI server with auto-reload.
 uv run python main.py web
 ```
 *   **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
-*   **Health Check**: `GET /api/{version}/ping`
+*   **Health Check**: `GET /api/ping`
 
 ### CLI Mode
 Runs the application as a command-line tool.
@@ -90,7 +90,7 @@ We maintain a strict testing pyramid to ensuring reliability and stability.
 | Test Type | Target Scope | Description |
 | :--- | :--- | :--- |
 | **Unit Tests** | `app/elemental` | Verify the correctness of core framework utilities, security functions, and helpers. |
-| **Integration Tests** | `app/src` | Ensure that domain modules interact correctly with the database and other infrastructure services. |
+| **Integration Tests** | `app/infrastructure` | Ensure that domain modules interact correctly with the database and other infrastructure services. |
 | **E2E Tests** | `app/src` | Validate full business workflows from the perspective of the user (API endpoints). |
 
 ### Running Tests
