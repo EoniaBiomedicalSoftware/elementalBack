@@ -1,0 +1,76 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Database stuff:
+db.sqlite3
+*.db
+*sqlite3
+
+hon
+profile_default/
+ipython_config.py
+
+# PyCharm
+# IntelliJ IDEA out directory
+out/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# logs
+logs/
+
+# temp
+temp/
+tmp/
+
+# commands for own usage
+_commands/
+
+# application report
+/report_wapiti.json
