@@ -1,0 +1,35 @@
+[application]
+app_type = "web"
+app_name = "Your app"
+app_env = "development"
+app_version = '0.1.0'
+app_description = "Your app description"
+debug = true
+host = "localhost"
+port = 8000
+api_version = "v1"
+api_prefix = "/api"
+ssl_enabled = false
+
+[application.cors]
+origins = ['*']
+allow_credentials = true
+allow_methods = ['*']
+allow_headers = ['*']
+max_age = 3600
+
+[jwt]
+algorithm = "HS256"
+secret_key = "your_secret_key"
+
+[jwt.access_token]
+expire_minutes = 0
+expire_hours = 1
+expire_seconds = 0
+expire_days = 0
+
+[jwt.refresh_token]
+expire_minutes = 0
+expire_seconds = 0
+expire_hour = 0
+expire_days = 7

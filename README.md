@@ -1,0 +1,141 @@
+# Elemental Backend
+
+**Elemental Backend** is a highly modular, scalable, and robust backend framework built with **Python 3.13+** and **FastAPI**. It is designed to provide a solid foundation for modern web applications using a clean architecture that separates core framework logic from business domains.
+
+## 🚀 Key Features
+
+*   **Modular Architecture**: Promotes separation of concerns by isolating core utilities (`elemental`), infrastructure (`infrastructure`), interfaces (`gateways`), and business logic (`src`).
+*   **Dual Execution Mode**: Runs seamlessly as a high-performance **Web Server** or as a **CLI Application** for management tasks.
+*   **Advanced Security**: Built-in support for JWT authentication (Access & Refresh tokens), password hashing (Bcrypt), and role-based access control (RBAC).
+*   **Asynchronous Database**: Fully async ORM support using **SQLAlchemy** and **Alembic** for migrations (SQLite by default).
+*   **Type-Safe Configuration**: robust settings management using **Pydantic** and TOML configuration files.
+*   **Comprehensive Logging**: Structured logging with support for JSON formatters and color-coded console output.
+
+## 📂 Project Structure
+
+The project follows a Domain-Driven Design (DDD) inspired structure:
+
+```
+elementalBack/
+├── app/
+│   ├── elemental/       # 🧱 CORE FRAMEWORK
+│   │   # Contains reusable utilities, security modules, logging, and exception handling.
+│   │   # This is the "framework" code that powers the application.
+│   │
+│   ├── gateways/        # 🚪 INTERFACES (Primary Adapters)
+│   │   # Entry points for the application.
+│   │   # - web/: FastAPI app, routers, middlewares.
+│   │   # - cli/: Command-line interface logic.
+│   │
+│   ├── infrastructure/  # 🏗️ INFRASTRUCTURE (Secondary Adapters)
+│   │   # Implementations of external services.
+│   │   # - database/: SQL models, repositories, Alembic migrations.
+│   │   # - email/, filemanager/, oauth/: External integrations.
+│   │
+│   └── src/             # 🧠 DOMAIN LOGIC
+│       # Your specific business modules live here (e.g., Users, Orders).
+│       # Each module is self-contained with its own models, services, and routers.
+│
+├── settings.dev.toml    # Development configuration
+├── pyproject.toml       # Project metadata and dependencies
+└── main.py              # Application Entry Point
+```
+
+## 🛠️ Prerequisites & Installation
+
+This project uses **[uv](https://github.com/astral-sh/uv)** for extremely fast dependency management.
+
+1.  **Clone the repository**
+    ```bash
+    git clone <repository_url>
+    cd elementalBack
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    uv sync
+    ```
+
+3.  **Environment Setup**
+    Copy the development settings to create your local configuration:
+    ```bash
+    cp settings.dev.toml settings.local.toml
+    ```
+    *Modify `settings.local.toml` to customize database credentials, secrets, and other variables.*
+
+## 🏃 Usage
+
+You can run the application in different modes using the entry point script.
+
+### Web Server (Development)
+Starts the FastAPI server with auto-reload.
+
+```bash
+uv run python main.py web
+```
+*   **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+*   **Health Check**: `GET /api/{version}/ping`
+
+### CLI Mode
+Runs the application as a command-line tool.
+
+```bash
+uv run python main.py cli [command]
+```
+
+## 🧪 Testing Strategy
+
+We maintain a strict testing pyramid to ensuring reliability and stability.
+
+| Test Type | Target Scope | Description |
+| :--- | :--- | :--- |
+| **Unit Tests** | `app/elemental` | Verify the correctness of core framework utilities, security functions, and helpers. |
+| **Integration Tests** | `app/src` | Ensure that domain modules interact correctly with the database and other infrastructure services. |
+| **E2E Tests** | `app/src` | Validate full business workflows from the perspective of the user (API endpoints). |
+
+### Running Tests
+
+Execute the full test suite using `pytest`:
+
+```bash
+uv run pytest
+```
+
+To run a specific category:
+
+```bash
+# Core Framework Tests
+uv run pytest test/unit/elemental
+
+# Business Logic Integration Tests
+uv run pytest test/integration
+
+# End-to-End Workflow Tests
+uv run pytest test/e2e
+```
+
+## 🗄️ Database Management
+
+Database migrations are handled by **Alembic**.
+
+*   **Generate a new migration** (after changing models):
+    ```bash
+    uv run alembic revision --autogenerate -m "Add user table"
+    ```
+*   **Apply migrations**:
+    ```bash
+    uv run alembic upgrade head
+    ```
+
+## 🤝 Contributing
+
+1.  Fork the repository.
+2.  Create a feature branch (`git checkout -b feature/amazing-feature`).
+3.  Commit your changes (`git commit -m 'Add amazing feature'`).
+4.  **Ensure all tests pass**.
+5.  Push to the branch.
+6.  Open a Pull Request.
+
+## 📄 License
+
+This project is licensed under the terms of the included [LICENSE](LICENSE) file.

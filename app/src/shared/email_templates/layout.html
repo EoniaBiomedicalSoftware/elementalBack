@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+    <div class="email-wrapper">
+        <div class="email-header">
+            {% block header %}
+                <h1 class="brand-name">{{ project_name|default("Elemental Service") }}</h1>
+            {% endblock %}
+        </div>
+
+        <div class="email-body">
+            {% block content %}
+            {% endblock %}
+        </div>
+
+        <div class="email-footer">
+            {% block footer %}
+                <div class="support">
+                    <p>If you have any questions, please contact our support team at
+                        <a href="mailto:{{ support_email }}">{{ support_email }}</a>
+                    </p>
+                </div>
+                <p>&copy; {{ current_year }} {{ company_name|default("Elemental Framework") }}. All rights reserved.</p>
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
