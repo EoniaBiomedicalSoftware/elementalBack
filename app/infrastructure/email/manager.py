@@ -100,11 +100,8 @@ async def init_email_service(
     application_email_context = get_application_email_context()
 
     if not application_email_context:
-        logger.error(
-            "No email templates registered in the application."
-        )
-        raise EmailTemplateError(
-            "No email templates registered in the application"
+        logger.warning(
+            "No email templates registered in the application, email functionality might not work as expected."
         )
 
     try:
