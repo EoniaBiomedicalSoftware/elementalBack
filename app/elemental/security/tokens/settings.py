@@ -52,7 +52,9 @@ class ElementalJWTSettings(ElementalSchema):
             minimum length of 8 characters.
     """
     algorithm: str = "HS256"
-    secret_key: SecretStr = Field(default="secret", min_length=8)
+    secret_key: SecretStr = Field(
+        min_length=8
+    )
 
     access_token: _AccessToken = _AccessToken()
     refresh_token: _RefreshToken = _RefreshToken()

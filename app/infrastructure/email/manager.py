@@ -1,8 +1,8 @@
 import importlib
 import pkgutil
 from logging import Logger
-from typing import Dict, Any, Optional
 from pathlib import Path
+from typing import Dict, Any, Optional
 
 from app.elemental.logging import get_logger
 
@@ -16,7 +16,6 @@ from .settings import EmailSettings
 from .drivers import EmailServiceManager
 from .exceptions import (
     EmailConnectionError,
-    EmailTemplateError,
 )
 
 _logger = None
@@ -101,7 +100,7 @@ async def init_email_service(
 
     if not application_email_context:
         logger.warning(
-            "No email templates registered in the application, email functionality might not work as expected."
+            "No email templates registered in the application."
         )
 
     try:

@@ -131,6 +131,12 @@ class FileManagerBase(ABC):
         raise NotImplementedError()
 
 
+    async def delete(
+        self,
+        file_path: str
+    ) -> None:
+        raise NotImplementedError()
+
     @abstractmethod
     async def get_public_url(self, file_path: str) -> str:
         raise NotImplementedError()

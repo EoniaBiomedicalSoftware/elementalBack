@@ -4,17 +4,18 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from jwt.exceptions import ExpiredSignatureError, PyJWTError
 
-from .settings import ElementalJWTSettings
+from ...settings import get_settings
 from .types import ElementalTokenTypes
 from ...exceptions.auth import TokenExpiredError, UnauthorizedError
 
-# Load settings
-_settings = ElementalJWTSettings()
 
 def _expiration_for(
     token_type, *,
     days=0, hours=0, minutes=0, seconds=0
 ) -> datetime:
+    _app_settings = get_settings()
+    _settings = _app_settings.jwt
+
     """Resolve expiration rules."""
     custom = any([days, hours, minutes, seconds])
 
@@ -37,6 +38,9 @@ def _create_token(
     token_type: str,
     sub_key: Optional[str] = None, **kwargs
 ) -> str:
+    _app_settings = get_settings()
+    _settings = _app_settings.jwt
+
     _secret = _settings.secret_key.get_secret_value()
     _algorithm = _settings.algorithm
 
@@ -86,6 +90,9 @@ def create_general_token(
     return _create_token(data, token_type, days=days, hours=hours, minutes=minutes, seconds=seconds)
 
 def decode_token(token: str) -> dict:
+    _app_settings = get_settings()
+    _settings = _app_settings.jwt
+
     _secret = _settings.secret_key.get_secret_value()
     _algorithm = _settings.algorithm
 
@@ -94,7 +101,8 @@ def decode_token(token: str) -> dict:
         return jwt.decode(token, _secret, algorithms=[_algorithm])
     except ExpiredSignatureError:
         raise TokenExpiredError()
-    except PyJWTError:
+    except PyJWTError as e:
+        print(e)
         raise UnauthorizedError(message="Invalid or malformed JWT token")
     except Exception as e:
         raise UnauthorizedError(message=f"Could not validate credentials: {str(e)}")

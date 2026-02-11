@@ -125,19 +125,16 @@ async def get_session() -> AsyncSession:
 async def get_session_dependency() -> AsyncGenerator[AsyncSession, None]:
     """
     FastAPI dependency that provides an AsyncSession.
-    Automatically handles session lifecycle and transactions.
+    The repository/service layer handles its own transactions.
     """
     if _session_factory is None:
         raise DatabaseInitializationError("Database factory not initialized.")
 
-    async with _session_factory() as session: # noqa
+    # Just provide the session, don't use 'session.begin()' here
+    async with _session_factory() as session:
         try:
-            # We use session.begin() to start a transaction context
-            async with session.begin():
-                yield session
-            # Auto-commit happens here if no exception occurred
+            yield session
         except Exception:
-            # Auto-rollback happens here on any exception
             await session.rollback()
             raise
         finally:

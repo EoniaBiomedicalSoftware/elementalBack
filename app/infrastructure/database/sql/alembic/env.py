@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.elemental.settings import get_settings
-from app.infrastructure.database.sql.models.declarative import ElementalSQLBase
+from app.infrastructure.database.sql.orm.declarative import ElementalSQLBase
 from app.infrastructure.database.sql.exceptions import DatabaseError
 
 base = ElementalSQLBase()

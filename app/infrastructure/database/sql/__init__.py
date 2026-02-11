@@ -4,16 +4,16 @@ from .manager import (
     get_session_dependency
 )
 
-from .models.declarative import DeclarativeBase
-from .models.mixins import (ElementalAuditMixin,
-                            ElementalModelMixin,
-                            ElementalReadOnlyMixin,
-                            ElementalSoftDeleteMixin,
-                            ElementalTimestampMixin,
-                            ElementalUUIDMixin
-                            )
-from .models.repository import ElementalRepository
-from .models.tables import (
+from .orm.declarative import DeclarativeBase
+from .orm.mixins import (ElementalAuditMixin,
+                         ElementalModelMixin,
+                         ElementalReadOnlyMixin,
+                         ElementalSoftDeleteMixin,
+                         ElementalTimestampMixin,
+                         ElementalUUIDMixin
+                         )
+from .orm.repository import ElementalRepository
+from .orm.tables import (
     ElementalTable,
     ElementalFullAuditTable,
     ElementalSoftDeleteTable,

@@ -41,11 +41,9 @@ def extract_user_info(
 ) -> dict:
     # Map raw payload to a structured dictionary
     return {
-        "id": token_payload.get("id"),
-        "username": token_payload.get("username"),
+        "sub": token_payload.get("id") or token_payload.get("sub"),
         "role": token_payload.get("role"),
         "email": token_payload.get("email"),
-        "sub": token_payload.get("id"),
         "iat": token_payload.get("iat"),
         "exp": token_payload.get("exp"),
     }
@@ -54,7 +52,7 @@ def extract_user_info(
 def get_user_permissions(
     token_payload: dict
 ) -> List[str]:
-    # Retrieve permissions list from payload
+    # Retrieve the permissions list from the payload
     return token_payload.get("permissions", [])
 
 

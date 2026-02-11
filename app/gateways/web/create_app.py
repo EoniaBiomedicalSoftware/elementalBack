@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
+
 from app.elemental.settings import get_settings
 
 from .middlewares import (
@@ -7,7 +9,8 @@ from .middlewares import (
     exception_parser_middleware,
     success_parser_middleware,
     headers_middleware,
-    security_logging_middleware
+    security_logging_middleware,
+    elemental_form_error_handler
 )
 
 from .routers import (
@@ -43,6 +46,7 @@ def __init_middlewares__(
 
     for middleware_class, options in middleware_list:
         _app_.add_middleware(middleware_class, **options)
+    _app_.add_exception_handler(RequestValidationError, elemental_form_error_handler)
 
 
 def create_app() -> FastAPI:
