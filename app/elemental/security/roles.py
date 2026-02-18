@@ -31,7 +31,9 @@ def require_role(
 
     if not check_user_role(token_payload, allowed_roles):
         user_role = token_payload.get("role", "None")
-        raise ForbiddenError(f"Operation not permitted for role: {user_role}")
+        raise ForbiddenError(
+            f"Operation not permitted for role: {user_role}"
+        )
 
     return token_payload
 

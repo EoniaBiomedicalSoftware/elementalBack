@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, Union
 from fastapi import Depends, HTTPException, status
 
 from .jwt_bearer import JWTBearer
@@ -40,6 +40,15 @@ async def get_current_user_role(
         )
     return role
 
+def require_roles(*allowed_roles: Union[str, int]):
+    async def check_roles(
+        payload: Dict[str, Any] = Depends(get_current_user_payload)
+    ) -> Dict[str, Any]:
+        return require_role(payload, *allowed_roles)
+
+    return check_roles
+#
+#
 
 # async def get_current_user_permissions(
 #     payload: Dict[str, Any] = Depends(get_current_user_payload)
@@ -47,27 +56,7 @@ async def get_current_user_role(
 #     return get_user_permissions(payload)
 #
 #
-# def require_roles(*allowed_roles: Union[str, int]):
-#     async def check_roles(
-#             payload: Dict[str, Any] = Depends(get_current_user_payload)
-#     ) -> Dict[str, Any]:
-#         try:
-#             return require_role(payload, *allowed_roles)
-#         except UnauthorizedError as e:
-#             raise HTTPException(
-#                 status_code=status.HTTP_401_UNAUTHORIZED,
-#                 detail=str(e),
-#                 headers={"WWW-Authenticate": "Bearer"},
-#             )
-#         except ForbiddenError as e:
-#             raise HTTPException(
-#                 status_code=status.HTTP_403_FORBIDDEN,
-#                 detail=str(e)
-#             )
-#
-#     return check_roles
-#
-#
+
 # def require_permission(required_permission: str):
 #     async def check_permission(
 #             payload: Dict[str, Any] = Depends(get_current_user_payload)

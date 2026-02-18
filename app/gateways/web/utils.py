@@ -3,6 +3,7 @@ from typing import Type
 from fastapi import Form
 from pydantic import BaseModel
 
+
 def as_form(cls: Type[BaseModel]):
     """
     Decorator to add a .as_form() method to a Pydantic model.

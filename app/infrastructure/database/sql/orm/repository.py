@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
 from ..exceptions import DatabaseError
 from .declarative import ElementalSQLBase
-from app.elemental.exceptions import DuplicateError, ConflictError
+from app.elemental.exceptions import DuplicateError, ConflictError, ValidationError
 
 
 class ElementalRepository:
@@ -20,7 +20,7 @@ class ElementalRepository:
         conditions = [column == value]
 
         if existing_id is not None:
-            conditions.append(self.model.id != existing_id) # noqa
+            conditions.append(self.model.id != existing_id)
 
         stmt = select(self.model).where(and_(*conditions)).limit(1)
         result = await self.session.execute(stmt)
@@ -36,84 +36,87 @@ class ElementalRepository:
         """Get record by primary key."""
         return await self.session.get(self.model, object_id)
 
-    # app/infrastructure/database/sql/models/repository.py
-
     async def _create(self, instance: ElementalSQLBase) -> ElementalSQLBase:
         """Add and commit a new record."""
         try:
             self.session.add(instance)
             await self._commit()
 
-            # We try to refresh to get DB-generated fields (like ID or timestamps)
-            # If it fails due to closed transaction, we catch it and continue
             try:
                 await self.session.refresh(instance)
             except Exception:
-                # Session closed, or transaction completed; instance
-                # still holds the data from the commit.
                 pass
 
             return instance
         except IntegrityError as e:
-            # Handle unique constraints
-            field_ = str(e.orig)
-            raise DuplicateError(
-                resource=self.model.__name__,
-                field=field_,
-                value="Value already exists"
-            ) from e
-        except SQLAlchemyError as e:
-            # This is where your 502 was coming from
+            error_msg = str(e.orig).lower()
+
+            if "not null" in error_msg:
+                raise ValidationError(
+                    message="A required field is missing.",
+                    details={"error_type": "missing_required_field"}
+                )
+
+            if "unique" in error_msg or "duplicate" in error_msg:
+                raise DuplicateError(
+                    message="A record with this information already exists.",
+                    details={"error_type": "unique_violation"}
+                )
+
+            raise ValidationError(
+                message="Data integrity violation.",
+                details={"error_type": "integrity_error"}
+            )
+
+        except SQLAlchemyError:
             raise DatabaseError(
                 message="Error saving new instance",
-                details={"orig": str(e)}
-            ) from e
+                details={"error_type": "internal_db_error"}
+            )
 
     async def _update(self, instance: ElementalSQLBase) -> ElementalSQLBase:
         """Commit changes to an existing record safely."""
         try:
-            # Re-attach the instance to the current session if it was detached
             instance = await self.session.merge(instance)
-
             await self._commit()
 
-            # Refresh to get any DB-side changes (triggers, defaults)
             try:
                 await self.session.refresh(instance)
             except Exception:
-                # If refresh fails after commit, we at least have the instance
                 pass
 
             return instance
-        except SQLAlchemyError as e:
-            # Rollback is usually handled by your commit/session logic
+        except IntegrityError as e:
+            # Handle integrity errors during update (e.g., changing email to an existing one)
+            error_msg = str(e.orig).lower()
+            if "unique" in error_msg or "duplicate" in error_msg:
+                raise DuplicateError(message="Conflict with existing data.", details={"error_type": "unique_violation"})
+            raise ValidationError(message="Update failed due to integrity violation.")
+
+        except SQLAlchemyError:
             raise DatabaseError(
                 message="Error updating instance",
-                details={"orig": str(e)}
-            ) from e
+                details={"error_type": "internal_db_error"}
+            )
 
     async def _delete(self, instance: ElementalSQLBase) -> None:
         """Delete and commit."""
         try:
-            # Check if an instance is detached or not persisted
             if instance not in self.session:
                 instance = await self.session.merge(instance)
 
             await self.session.delete(instance)
             await self._commit()
-        except SQLAlchemyError as e:
-            # Avoid raising ExternalServiceError (502)
-            # Use ConflictError (409) or a custom DatabaseError (500)
+        except SQLAlchemyError:
             raise ConflictError(
-                message="Could not delete: instance is not in a valid state",
-                details={"orig": str(e)}
-            ) from e
+                message="Could not delete: instance is in use or invalid state",
+                details={"error_type": "delete_conflict"}
+            )
 
     async def _get_all(self, page: int = 1, page_size: int = 10) -> List[ElementalSQLBase]:
         """Paginated fetch."""
         if page < 1 or page_size < 1:
-            # Note: This is more of a ValidationError than a DatabaseError
-            raise DatabaseError(message="Pagination parameters must be >= 1")
+            raise ValidationError(message="Pagination parameters must be >= 1")
 
         offset = (page - 1) * page_size
         stmt = select(self.model).offset(offset).limit(page_size)
@@ -121,8 +124,11 @@ class ElementalRepository:
         try:
             result = await self.session.execute(stmt)
             return list(result.scalars().all())
-        except SQLAlchemyError as e:
-            raise DatabaseError(message="Error fetching records", details={"orig": str(e)}) from e
+        except SQLAlchemyError:
+            raise DatabaseError(
+                message="Error fetching records",
+                details={"error_type": "fetch_error"}
+            )
 
     async def _commit(self):
         """Standardized commit with automatic rollback on failure."""
@@ -130,5 +136,4 @@ class ElementalRepository:
             await self.session.commit()
         except SQLAlchemyError as e:
             await self.session.rollback()
-            # We re-raise to let the caller methods (_create, _update) handle it
             raise e

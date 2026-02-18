@@ -16,6 +16,7 @@ from .middlewares import (
 from .routers import (
     elemental_router,
     get_all_routers,
+    custom_openapi
 )
 
 from .lifespan import app_lifespan
@@ -30,6 +31,8 @@ def __init_routers__(_app_: FastAPI, api_prefix: str = '') -> None:
         router=elemental_router,
         prefix=api_prefix
     )
+    _app_.openapi = lambda: custom_openapi(_app_)
+
 
 def __init_middlewares__(
     _app_: FastAPI,

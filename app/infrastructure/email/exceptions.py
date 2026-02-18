@@ -6,11 +6,11 @@ from app.elemental.exceptions import ExternalServiceError
 class EmailError(ExternalServiceError):
     """Generic base exception for email service issues."""
     def __init__(
-            self,
-            message: str = "Email service error",
-            error_code: ElementalErrorCode = ElementalErrorCode.EXTERNAL_SERVICE_ERROR,
-            details: Optional[Any] = None,
-            **kwargs
+        self,
+        message: str = "Email service error",
+        error_code: ElementalErrorCode = ElementalErrorCode.EXTERNAL_SERVICE_ERROR,
+        details: Optional[Any] = None,
+        **kwargs
     ):
         super().__init__(
             message=message,

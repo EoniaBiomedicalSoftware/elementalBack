@@ -47,7 +47,7 @@ class ElementalUUIDMixin:
     id: Mapped[str] = mapped_column(
         String(36),
         primary_key=True,
-        default=lambda: str(uuid.uuid4().hex),
+        default=lambda: str(uuid.uuid4()),
     )
     
     @classmethod
@@ -64,7 +64,7 @@ class ElementalUUIDMixin:
             A unique UUID.
         """
         while await session.get(cls, id):  # Check if ID exists in DB
-            id = str(uuid.uuid4().hex)  # Generate a new UUID
+            id = str(uuid.uuid4())  # Generate a new UUID
         return id
 
 
